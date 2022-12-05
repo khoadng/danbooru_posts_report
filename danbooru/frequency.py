@@ -31,7 +31,7 @@ _int_to_date_dict = {
     3 : "Wednesday",
     4 : "Thursday",
     5 : "Friday",
-    6 : "Sartuday",
+    6 : "Saturday",
     7 : "Sunday",
 }
 

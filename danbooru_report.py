@@ -8,6 +8,7 @@ from danbooru.tag import tag_report
 from danbooru.frequency import frequency_report
 from danbooru.rating import rating_report
 from danbooru.source import source_report
+from danbooru.uploader import uploader_report
 
 import argparse
 
@@ -21,6 +22,13 @@ def create_request_url(login, api_key, tags, page=1, limit=200, age='<6m'):
 
     return f'https://danbooru.donmai.us/posts.json?login={login}&api_key={api_key}&tags={tags}&age:{age}&limit={limit}&page={page}'
  
+
+def create_request_user_url(ids):
+    return f'https://danbooru.donmai.us/users.json?search[id]={",".join([str(id) for id in ids])}'
+
+def request(url):
+    res = requests.get(url)
+    return json.loads(res.text)
 
 if __name__ == "__main__":
 
@@ -43,10 +51,8 @@ if __name__ == "__main__":
     url = create_request_url(login, api_key, tags)
     url2 = create_request_url(login, api_key, tags, page=2)
     
-    res = requests.get(url)
-    res2 = requests.get(url2)
-    data = json.loads(res.text)
-    data2 = json.loads(res2.text)
+    data = request(url)
+    data2 = request(url2)
     data = data + data2
     
     favcount = [(d['id'], d['fav_count'], post(d['id'])) for d in data]
@@ -54,6 +60,7 @@ if __name__ == "__main__":
     createdAt = [(d['created_at']) for d in data]
     rating = [(d['rating']) for d in data]
     source = [(d['source']) for d in data]
+    uploader_id = [(d['uploader_id']) for d in data]
     approver = [(d['id'], d['approver_id']) for d in data if d['is_deleted'] == False]
     pending = [d['id'] for d in data if d['is_pending'] == True]
     deleted = [d['id'] for d in data if d['is_deleted'] == True]
@@ -101,6 +108,10 @@ if __name__ == "__main__":
     source_report(source)
     
     print('---')
+
+    uploader_report(uploader_id, uploader_fetcher=lambda ids: request(create_request_user_url(ids)))
+
+    print('---')
     
     print('Artists:')
     tag_report(artists, len(data))
@@ -114,9 +125,9 @@ if __name__ == "__main__":
     tag_report(characters, len(data))
     print('>>>')
     
-    print('General:')
-    tag_report(generals, len(data))
-    print('>>>')
+    # print('General:')
+    # tag_report(generals, len(data))
+    # print('>>>')
     
     print('---')
     

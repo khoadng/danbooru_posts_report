@@ -3,7 +3,7 @@ from collections import Counter
 
 def tag_report(tags, total_post):
     counter = Counter(tags)
-    tags = counter.most_common(20)
+    tags = counter.most_common(10)
     total_tags = counter.total()
     average_tag_per_post = round(total_tags / total_post, 2)
 

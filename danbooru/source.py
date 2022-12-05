@@ -17,7 +17,4 @@ def source_report(sources_raw):
     for c in counter:
         count = counter[c]
         # source_string = 'pixiv.net' if c == 'i.pximg.net' else c
-        print(f'{c: <20}: {count: <3}')
-    
-if __name__ == "__main__":
-    source_report(["https://twitter.com/FELUCCACHAN/status/1592505739788324864", "https://i.pximg.net/img-zip-ugoira/img/2021/07/23/02/09/05/91429593_ugoira1920x1080.zip"])
+        print(f'{c if c != None else "<None>": <20}: {count: <3}')
