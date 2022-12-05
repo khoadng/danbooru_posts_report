@@ -37,23 +37,27 @@ if __name__ == "__main__":
                         help="A list of tags, space delimited")
     parser.add_argument('--login', action='store', type=str, help="Account name")
     parser.add_argument('--api_key', action='store', type=str, help="API key")
+    parser.add_argument('--sample', action='store', type=int, help="Total posts")
 
     args = parser.parse_args()
 
     tags = args.tag_string
     login = args.login
     api_key = args.api_key
+    sample = args.sample if args.sample != None else 400
 
     if (login != None and api_key == None) or (login == None and api_key != None):
         print("Must provide both API key and login")
         exit()
 
-    url = create_request_url(login, api_key, tags)
-    url2 = create_request_url(login, api_key, tags, page=2)
-    
-    data = request(url)
-    data2 = request(url2)
-    data = data + data2
+
+    total_page = max(sample // 200, 1)
+    urls = [create_request_url(login, api_key, tags, page=i+1) for i in range(total_page)]
+
+    data = []
+    for url in urls:
+        d = request(url)
+        data += d
     
     favcount = [(d['id'], d['fav_count'], post(d['id'])) for d in data]
     score = [(d['id'], d['score'], post(d['id'])) for d in data]
