@@ -15,24 +15,24 @@ import argparse
 def post(id):
     return f'https://danbooru.donmai.us/posts/{id}'
 
-def create_request_url(login, api_key, user, page=1, limit=200, age='<6m'):
+def create_request_url(login, api_key, tags, page=1, limit=200, age='<6m'):
     if login == None or api_key == None:
-        return f'https://danbooru.donmai.us/posts.json?tags=user:{user}&age:{age}&limit={limit}&page={page}'
+        return f'https://danbooru.donmai.us/posts.json?tags={tags}&age:{age}&limit={limit}&page={page}'
 
-    return f'https://danbooru.donmai.us/posts.json?login={login}&api_key={api_key}&tags=user:{user}&age:{age}&limit={limit}&page={page}'
+    return f'https://danbooru.donmai.us/posts.json?login={login}&api_key={api_key}&tags={tags}&age:{age}&limit={limit}&page={page}'
  
 
 if __name__ == "__main__":
 
-    parser = argparse.ArgumentParser(description='Display uploader statistic.')
-    parser.add_argument('uploader', type=str, 
-                        help="Uploader's name")
+    parser = argparse.ArgumentParser(description='Display tags statistic.')
+    parser.add_argument('tag_string', type=str, 
+                        help="A list of tags, space delimited")
     parser.add_argument('--login', action='store', type=str, help="Account name")
     parser.add_argument('--api_key', action='store', type=str, help="API key")
 
     args = parser.parse_args()
 
-    user = args.uploader
+    tags = args.tag_string
     login = args.login
     api_key = args.api_key
 
@@ -40,8 +40,8 @@ if __name__ == "__main__":
         print("Must provide both API key and login")
         exit()
 
-    url = create_request_url(login, api_key, user)
-    url2 = create_request_url(login, api_key, user, page=2)
+    url = create_request_url(login, api_key, tags)
+    url2 = create_request_url(login, api_key, tags, page=2)
     
     res = requests.get(url)
     res2 = requests.get(url2)
