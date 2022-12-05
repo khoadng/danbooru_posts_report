@@ -23,9 +23,7 @@ def frequency_report(dates_raw):
     _active_hour_report(hours)
 
 def _to_local(date: datetime):
-    utc = ZoneInfo('UTC')
-    utctime = date.replace(tzinfo=utc)
-    return utctime.astimezone(LOCAL_TIMEZONE)
+    return date.astimezone(LOCAL_TIMEZONE)
 
 _int_to_date_dict = {
     1 : "Monday",
