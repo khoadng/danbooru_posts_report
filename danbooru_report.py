@@ -2,7 +2,7 @@ import json
 
 import requests
 
-from danbooru.approve import approve_statistic_report, approver_report
+from danbooru.approve import approve_statistic_report, approver_report, ApproveData
 from danbooru.fav_and_score import fav_report, score_report
 from danbooru.tag import tag_report
 from danbooru.frequency import frequency_report
@@ -29,6 +29,11 @@ def create_request_user_url(ids):
 def request(url):
     res = requests.get(url)
     return json.loads(res.text)
+
+def fetch_user(ids):
+    url = create_request_user_url(ids)
+
+    return request(url)
 
 if __name__ == "__main__":
 
@@ -65,7 +70,7 @@ if __name__ == "__main__":
     rating = [(d['rating']) for d in data]
     source = [(d['source']) for d in data]
     uploader_id = [(d['uploader_id']) for d in data]
-    approver = [(d['id'], d['approver_id']) for d in data if d['is_deleted'] == False]
+    approve_data = [ApproveData(d['id'], d['approver_id'], d['rating']) for d in data if d['is_deleted'] == False]
     pending = [d['id'] for d in data if d['is_pending'] == True]
     deleted = [d['id'] for d in data if d['is_deleted'] == True]
     tags = [t for d in data for t in d['tag_string'].split(' ')]
@@ -81,8 +86,6 @@ if __name__ == "__main__":
     favcount.reverse()
     score.reverse()
     
-    
-    
     print('----')
     
     score_report(score)
@@ -93,9 +96,9 @@ if __name__ == "__main__":
     
     print('----')
     
-    # approver_report(approver)
+    approver_report(approve_data, user_fetcher=fetch_user)
     
-    # print('---')
+    print('---')
     
     approve_statistic_report(pending, deleted, data)
     
@@ -113,7 +116,7 @@ if __name__ == "__main__":
     
     print('---')
 
-    uploader_report(uploader_id, uploader_fetcher=lambda ids: request(create_request_user_url(ids)))
+    uploader_report(uploader_id, uploader_fetcher=fetch_user)
 
     print('---')
     
@@ -134,6 +137,3 @@ if __name__ == "__main__":
     # print('>>>')
     
     print('---')
-    
-    
-    
