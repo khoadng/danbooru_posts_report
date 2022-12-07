@@ -1,11 +1,12 @@
 from collections import Counter
 from datetime import datetime
-from zoneinfo import ZoneInfo
+
+from danbooru.models.post import Post
 
 LOCAL_TIMEZONE = datetime.now().astimezone().tzinfo
 
-
-def frequency_report(dates_raw):
+def frequency_report(posts: list[Post]):
+    dates_raw = [p.createdAt for p in posts]
     dates = [ datetime.fromisoformat(d) for d in dates_raw]
     dates = [_to_local(d) for d in dates]
     date_of_weeks = [d.isoweekday() for d in dates]

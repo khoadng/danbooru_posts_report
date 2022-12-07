@@ -1,27 +1,47 @@
 import statistics
 
-def score_report(score):
-    score_sorted = sorted(score, reverse=True, key=lambda x: x[1])
-    score_only = [f[1] for f in score]
-    average = round(statistics.mean(score_only))
-    median = statistics.median(score_only)
+from danbooru.models.post import Post
 
-    print(f'average score: {average}')
-    print(f'median score: {median}')
-    print(f'top 1 score: {score_sorted[0]}')
-    print(f'top 2 score: {score_sorted[1]}')
-    print(f'top 3 score: {score_sorted[2]}')
-    print(f'lowest score: {min(score, key= lambda x: x[1])}')
+def post(id):
+    return f'https://danbooru.donmai.us/posts/{id}'
 
-def fav_report(favcount):
-    fav_sorted = sorted(favcount, reverse=True, key=lambda x: x[1])
-    fav_only = [f[1] for f in favcount]
-    average = round(statistics.mean(fav_only))
-    median = statistics.median(fav_only)
+def print_rank(data, title, selector):
+    print(f'# {title}:')
 
-    print(f'average favorite: {average}')
-    print(f'median favorite: {median}')
-    print(f'top 1 favorite: {fav_sorted[0]}')
-    print(f'top 2 favorite: {fav_sorted[1]}')
-    print(f'top 3 favorite: {fav_sorted[2]}')
-    print(f'lowest favorite: {min(favcount, key= lambda x: x[1])}')
+    for i, s in enumerate(data):
+        rank = i + 1
+        count = selector(s)
+        print(f' {rank:<3}. {count:<4} -> ({post(s.id)})')
+
+def _score_get(post: Post):
+    return post.score
+
+def _fav_get(post: Post):
+    return post.fav_count
+
+def _report(posts: list[Post], selector):
+    sorted_posts = sorted(posts, reverse=True, key=selector)
+    target_data = [selector(f) for f in sorted_posts]
+    average = round(statistics.mean(target_data))
+    median = statistics.median(target_data)
+
+    print(f'average: {average}')
+    print(f'median: {median}')
+
+    best_sfw = [p for p in sorted_posts if p.rating == 'g']
+    best_nsfw = [p for p in sorted_posts if p.rating != 'g']
+
+    print_rank(best_sfw[:3], 'Best SFW', selector)
+    print_rank(best_nsfw[:3], 'Best NSFW', selector)
+    print_rank(sorted_posts[-3:], 'Worst', selector)
+
+def score_report(posts: list[Post]):
+    print('## SCORE')
+    _report(posts, selector=_score_get)
+
+def fav_report(posts: list[Post]):
+    print('## FAVORITES')
+    _report(posts, selector=_fav_get)
+
+
+    

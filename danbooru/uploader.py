@@ -1,6 +1,9 @@
 from collections import Counter
 
-def uploader_report(uploader_ids, uploader_fetcher ):
+from danbooru.models.post import Post
+
+def uploader_report(posts: list[Post], uploader_fetcher ):
+    uploader_ids = [p.uploader_id for p in posts]
     counter = Counter(uploader_ids)
     top_20 = counter.most_common(20)
     top_20_ids = [item[0] for item in top_20]

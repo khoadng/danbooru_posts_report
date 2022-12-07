@@ -1,8 +1,10 @@
 from collections import Counter
 from urllib.parse import urlparse
 
+from danbooru.models.post import Post
 
-def source_report(sources_raw):
+def source_report(posts: list[Post]):
+    sources_raw = [p.source for p in posts]
     sources = [urlparse(s) for s in sources_raw]
     hosts = [s.hostname for s in sources]
 

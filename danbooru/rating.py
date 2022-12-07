@@ -1,6 +1,7 @@
 
 from collections import Counter
 
+from danbooru.models.post import Post
 
 GENERAL = 'g'
 SENSITIVE = 's'
@@ -13,13 +14,8 @@ nsfw_ratings = [
     EXPLICIT,
 ]
 
-def _is_sfw(r):
-    return r not in nsfw_ratings
-
-def _is_nsfw(r):
-    return r in nsfw_ratings
-
-def rating_report(ratings):
+def rating_report(posts: list[Post]):
+    ratings = [p.rating for p in posts]
     counter = Counter(ratings)
     total = counter.total()
     print('# Total rating count:')

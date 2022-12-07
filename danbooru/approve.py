@@ -1,5 +1,7 @@
 from collections import Counter
 
+from danbooru.models.post import Post
+
 class ApproveData:
     def __init__(self, pid, aid, rating):
         self.post_id = pid
@@ -27,14 +29,17 @@ def group_by(data, key):
 
     return m
 
-def approve_statistic_report(pending, deleted, data):
-    t_count = len(data)
-    p_count = len(pending)
-    d_count = len(deleted)
+def _calc_percent(num, total):
+    return round(num / total * 100, 1)
+
+def approve_statistic_report(posts: list[Post]):
+    t_count = len(posts)
+    p_count = len([p.is_pending for p in posts if p.is_pending])
+    d_count = len([p.is_deleted for p in posts if p.is_deleted])
     a_count = t_count - p_count - d_count
-    p_percent = round(p_count / t_count * 100, 2)
-    d_percent = round(d_count / t_count * 100, 2)
-    a_percent = round(a_count / t_count * 100, 2)
+    p_percent = _calc_percent(p_count, t_count)
+    d_percent = _calc_percent(d_count, t_count)
+    a_percent = _calc_percent(a_count, t_count)
 
     print(f'Total: {t_count}')
     print(f'Active: {a_count}')
@@ -43,9 +48,6 @@ def approve_statistic_report(pending, deleted, data):
     print(f'Active percent: {a_percent}%')
     print(f'Pending percent: {p_percent}%')
     print(f'Deleted percent: {d_percent}%')
-
-def _calc_percent(num, total):
-    return round(num / total * 100, 1)
 
 def approver_report(approve_data: list[ApproveData], user_fetcher):
     user_ids = [a.approver_id for a in approve_data]
