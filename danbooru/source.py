@@ -14,9 +14,12 @@ def source_report(posts: list[Post]):
 
     print(f'Most common source: {most_common_host[0]} ({most_common_percent}%)')
 
-    print('# Source')
+    top_5 = counter.most_common(5)
 
-    for c in counter:
-        count = counter[c]
-        # source_string = 'pixiv.net' if c == 'i.pximg.net' else c
-        print(f'{c if c != None else "<None>": <20}: {count: <3}')
+
+    print('# Top 5 source')
+
+    for c in top_5:
+        count = c[1]
+        name = c[0] if c[0] != None else "<None>"
+        print(f'{name: <40}: {count: <3}')

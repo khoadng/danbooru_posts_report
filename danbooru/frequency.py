@@ -6,14 +6,13 @@ from danbooru.models.post import Post
 LOCAL_TIMEZONE = datetime.now().astimezone().tzinfo
 
 def frequency_report(posts: list[Post]):
-    dates_raw = [p.createdAt for p in posts]
-    dates = [ datetime.fromisoformat(d) for d in dates_raw]
+    dates = [p.createdAt for p in posts]
     dates = [_to_local(d) for d in dates]
     date_of_weeks = [d.isoweekday() for d in dates]
     hours = [d.hour for d in dates]
 
     total_day = (dates[0] - dates[-1]).days
-    p_per_day = len(dates_raw) // total_day
+    p_per_day = len(dates) // total_day
 
     print(f'# Post per day: {p_per_day}')
     

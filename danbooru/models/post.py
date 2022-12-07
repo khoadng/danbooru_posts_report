@@ -19,3 +19,13 @@ class Post:
     copyright_tags: list[str]
     character_tags: list[str]
     general_tags: list[str]
+
+    approved_at: datetime
+
+@dataclass
+class PostApproval:
+    id: int
+    user_id: int
+    post_id: int
+    created_at: datetime
+    updated_at: datetime

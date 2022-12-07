@@ -1,6 +1,8 @@
 from collections import Counter
+from danbooru.danbooru_url_maker import post
 
 from danbooru.models.post import Post
+from danbooru.utils import group_by
 
 class ApproveData:
     def __init__(self, pid, aid, rating):
@@ -17,17 +19,6 @@ class Approver:
 
 def create_approver(id, name, approved: list[ApproveData]):
     return Approver(id, name, approved)
-
-def group_by(data, key):
-    m = {}
-    for d in data:
-        k = key(d)
-        if k in m:
-            m[k].append(d)
-        else:
-            m[k] = [d]
-
-    return m
 
 def _calc_percent(num, total):
     return round(num / total * 100, 1)
@@ -85,3 +76,30 @@ def approver_report(approve_data: list[ApproveData], user_fetcher):
 
     print(f'# Approver with most Explicit post approved: {most_e_approved[0].name} ({most_e_approved[1]})')
     print(f'# Approver with highest Explicit post approved: {highest_e_approved[0].name} ({highest_e_approved[1]}%)')
+
+
+def approval_report(posts: list[Post]):
+    approval_delays = [ (p, p.approved_at - p.createdAt) for p in posts if p.approved_at != None]
+    approval_delays_group = group_by(approval_delays, key=lambda x: x[1].days)
+    total = len(posts)
+
+    day_key = sorted(approval_delays_group.keys())
+
+    print('# Time for a post to be approved')
+    for k in day_key:
+        count = len(approval_delays_group[k])
+        percent = _calc_percent(count, total)
+        print(f'{k}: {count:>4} ({percent}%)')
+
+    approved_late = day_key[3:]
+
+    if approved_late == None:
+        return
+
+    print('# Post got approved after deleted')
+    for k in approved_late:
+        print(f'- Day {k}:')
+        for i, t in enumerate(approval_delays_group[k]):
+            p, _ = t
+            rank = i + 1
+            print(f' {rank}. {post(p.id)} (rating: {p.rating})')

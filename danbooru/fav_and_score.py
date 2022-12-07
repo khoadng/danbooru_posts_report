@@ -1,9 +1,7 @@
 import statistics
+from danbooru.danbooru_url_maker import post
 
 from danbooru.models.post import Post
-
-def post(id):
-    return f'https://danbooru.donmai.us/posts/{id}'
 
 def print_rank(data, title, selector):
     print(f'# {title}:')
