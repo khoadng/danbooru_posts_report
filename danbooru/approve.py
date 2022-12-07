@@ -1,4 +1,5 @@
 from collections import Counter
+from danbooru.active_hour import active_hour_report
 from danbooru.danbooru_url_maker import post
 
 from danbooru.models.post import Post
@@ -93,13 +94,15 @@ def approval_report(posts: list[Post]):
 
     approved_late = day_key[3:]
 
-    if approved_late == None:
-        return
+    if approved_late:
+        print('# Post got approved after deleted')
+        for k in approved_late:
+            print(f'- Day {k}:')
+            for i, t in enumerate(approval_delays_group[k]):
+                p, _ = t
+                rank = i + 1
+                print(f' {rank}. {post(p.id)} (rating: {p.rating})')
 
-    print('# Post got approved after deleted')
-    for k in approved_late:
-        print(f'- Day {k}:')
-        for i, t in enumerate(approval_delays_group[k]):
-            p, _ = t
-            rank = i + 1
-            print(f' {rank}. {post(p.id)} (rating: {p.rating})')
+    print('# Approve hour during day:')
+    hours = [p.approved_at.hour for p in posts if p.approved_at != None]
+    active_hour_report(hours)

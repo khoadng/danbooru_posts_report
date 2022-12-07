@@ -8,3 +8,9 @@ def group_by(data, key):
             m[k] = [d]
 
     return m
+
+
+def num_to_indicator(num, step=2):
+    total = num // step
+
+    return f'({num: >3}) ' + ''.join(['|' for _ in range(total)])

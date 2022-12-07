@@ -9,7 +9,7 @@ def print_rank(data, title, selector):
     for i, s in enumerate(data):
         rank = i + 1
         count = selector(s)
-        print(f' {rank:<3}. {count:<4} -> ({post(s.id)})')
+        print(f' {rank}. {count:<4} -> ({post(s.id)})')
 
 def _score_get(post: Post):
     return post.score

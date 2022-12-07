@@ -1,5 +1,6 @@
 import datetime
 import json
+import math
 import time
 import requests
 import argparse
@@ -13,11 +14,11 @@ from danbooru.rating import rating_report
 from danbooru.source import source_report
 from danbooru.uploader import uploader_report
 
-def create_request_url(login, api_key, tags, page=1, limit=200, age='<6m'):
+def create_request_url(login, api_key, tags, page=1, limit=200):
     if login == None or api_key == None:
-        return f'https://danbooru.donmai.us/posts.json?tags={tags}&age:{age}&limit={limit}&page={page}'
+        return f'https://danbooru.donmai.us/posts.json?tags={tags}&limit={limit}&page={page}'
 
-    return f'https://danbooru.donmai.us/posts.json?login={login}&api_key={api_key}&tags={tags}&age:{age}&limit={limit}&page={page}'
+    return f'https://danbooru.donmai.us/posts.json?login={login}&api_key={api_key}&tags={tags}&limit={limit}&page={page}'
  
 def create_request_user_url(ids):
     return f'https://danbooru.donmai.us/users.json?search[id]={",".join([str(id) for id in ids])}'
@@ -88,7 +89,7 @@ if __name__ == "__main__":
         exit()
 
 
-    total_page = max(sample // 200, 1)
+    total_page = max(math.ceil(sample / 200), 1)
     urls = [(create_request_url(login, api_key, tags, page=i+1), i+1) for i in range(total_page)]
 
     data: list[Post] = []

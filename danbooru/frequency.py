@@ -1,7 +1,9 @@
 from collections import Counter
 from datetime import datetime
+from danbooru.active_hour import active_hour_report
 
 from danbooru.models.post import Post
+from danbooru.utils import num_to_indicator
 
 LOCAL_TIMEZONE = datetime.now().astimezone().tzinfo
 
@@ -20,7 +22,7 @@ def frequency_report(posts: list[Post]):
     _date_of_week_report(date_of_weeks)
 
     print('# Post count during day:')
-    _active_hour_report(hours)
+    active_hour_report(hours)
 
 def _to_local(date: datetime):
     return date.astimezone(LOCAL_TIMEZONE)
@@ -35,55 +37,12 @@ _int_to_date_dict = {
     7 : "Sunday",
 }
 
-def _active_hour_report(hours):
-    counter = Counter(hours)
-    counter_list = [(c, counter[c]) for c in counter]
-    most_active = max(counter_list, key=lambda x: x[1])[0]
-    least_active = min(counter_list, key=lambda x: x[1])[0]
-
-    def __add_padding_hour(data: Counter):
-        res = {d:data[d] for d in data}
-        for h in range(24):
-            if h not in res:
-                res[h] = 0
-
-        return res
-
-    hours_dict = __add_padding_hour(counter)
-    
-    for c in sorted(hours_dict.keys()):
-        most_active_text = "(most active)" if most_active == c else ""
-        least_active_text = "(least active)" if least_active == c else ""
-        active_text = most_active_text + least_active_text
-        count = counter[c]
-        print(f'{c:02}\'00:{_num_to_indicator(count, step=1)}')
-
 def _date_of_week_report(date_of_weeks):
     counter = Counter(date_of_weeks)
-    counter_list = [(c, counter[c]) for c in counter]
-    # most_active = max(counter_list, key=lambda x: x[1])[0]
-    # least_active = min(counter_list, key=lambda x: x[1])[0]
     
     for c in sorted(counter):
         date_text = _int_to_date_dict[c]
         date_text_short = date_text[:3]
         count = counter[c]
-        # most_active_text = "(most active)" if most_active == c else ""
-        # least_active_text = "(least active)" if least_active == c else ""
-        # active_text = ''
-        print(f'{date_text_short}:{_num_to_indicator(count, step=2)}')
 
-
-def _num_to_indicator(num, step=2):
-    total = num // step
-
-    return f'({num: >3}) ' + ''.join(['|' for _ in range(total)])
-
-if __name__ == "__main__":
-    dates = [datetime.now()]
-    # _date_of_week_report([1,2,2,2,2])
-    # _active_hour_report([1,1,1,2,3,3])
-    print(_num_to_indicator(1))
-    print(_num_to_indicator(2))
-    print(_num_to_indicator(20))
-    print(_num_to_indicator(100))
+        print(f'{date_text_short}:{num_to_indicator(count, step=2)}')
