@@ -1,4 +1,5 @@
 from collections import Counter
+import datetime
 from danbooru.active_hour import active_hour_report
 from danbooru.danbooru_url_maker import post
 
@@ -40,6 +41,22 @@ def approve_statistic_report(posts: list[Post]):
     print(f'Active percent: {a_percent}%')
     print(f'Pending percent: {p_percent}%')
     print(f'Deleted percent: {d_percent}%')
+
+    pendings = sorted([p for p in posts if p.is_pending == True], key=lambda x: x.createdAt)
+    now = datetime.datetime.now()
+    tz = now.tzinfo
+
+    if pendings:
+        print('# Pending:')
+        for _, p in enumerate(pendings):
+            pending_time = now.astimezone(tz) - p.createdAt.astimezone(tz)
+            pending_hours = round(pending_time.total_seconds() / 60 / 60, 2)
+            pending_day = round(pending_hours / 24, 2)
+            if pending_hours < 24:
+                print(f' {p.id}: {pending_hours} hours ago')
+            else:
+                print(f' {p.id}: {pending_day} days ago')
+
 
 def approver_report(approve_data: list[ApproveData], user_fetcher):
     user_ids = [a.approver_id for a in approve_data]
