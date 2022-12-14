@@ -1,5 +1,5 @@
 from collections import Counter
-from datetime import datetime
+from datetime import datetime, timedelta
 from danbooru.active_hour import active_hour_report
 
 from danbooru.models.post import Post
@@ -24,6 +24,10 @@ def frequency_report(posts: list[Post]):
     print('# Post count during day:')
     active_hour_report(hours)
 
+    print('# Post count during last 30 days:')
+    _last_30_days_report([p.createdAt for p in posts])
+
+
 def _to_local(date: datetime):
     return date.astimezone(LOCAL_TIMEZONE)
 
@@ -46,3 +50,32 @@ def _date_of_week_report(date_of_weeks):
         count = counter[c]
 
         print(f'{date_text_short}:{num_to_indicator(count, step=2)}')
+
+def _last_30_days_report(dates: list[datetime]):
+    dates_only = [datetime(d.year, d.month, d.day) for d in dates]
+    counter = Counter(dates_only)
+
+    thirty_days = _get_inbetween_dates(datetime.now(), 30)
+    thirty_days_dict = {datetime(d.year, d.month, d.day):0 for d in thirty_days}
+    for c in counter.keys():
+        if c in thirty_days_dict:
+            thirty_days_dict[c] = counter[c]
+
+    counter = thirty_days_dict
+
+    for d in sorted(counter.keys()):
+        date_text = f'{d.day:02}/{d.month:02}/{d.year:02}'
+        count = counter[d]
+    
+        print(f'{date_text}:{num_to_indicator(count, step=2)}')
+
+def _get_inbetween_dates(start: datetime, total_days: int):
+    end = start - timedelta(days=total_days)
+    date_modified = start
+    list=[start] 
+
+    while date_modified > end:
+        date_modified -= timedelta(days=1) 
+        list.append(date_modified)
+
+    return list
