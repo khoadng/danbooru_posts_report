@@ -52,7 +52,8 @@ def _date_of_week_report(date_of_weeks):
         print(f'{date_text_short}:{num_to_indicator(count, step=2)}')
 
 def _last_30_days_report(dates: list[datetime]):
-    dates_only = [datetime(d.year, d.month, d.day) for d in dates]
+    local_dates = [d.astimezone(LOCAL_TIMEZONE) for d in dates]
+    dates_only = [datetime(d.year, d.month, d.day) for d in local_dates]
     counter = Counter(dates_only)
 
     thirty_days = _get_inbetween_dates(datetime.now(), 30)
