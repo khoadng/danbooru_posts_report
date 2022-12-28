@@ -34,11 +34,11 @@ def approve_statistic_report(posts: list[Post]):
     d_percent = _calc_percent(d_count, t_count)
     a_percent = _calc_percent(a_count, t_count)
 
-    print(f'Total: {t_count}')
-    print(f'Active: {a_count}')
+    print(f'Total  : {t_count}')
+    print(f'Active : {a_count}')
     print(f'Pending: {p_count}')
     print(f'Deleted: {d_count}')
-    print(f'Active percent: {a_percent}%')
+    print(f'Active percent : {a_percent}%')
     print(f'Pending percent: {p_percent}%')
     print(f'Deleted percent: {d_percent}%')
 
@@ -107,7 +107,7 @@ def approval_report(posts: list[Post]):
     for k in day_key:
         count = len(approval_delays_group[k])
         percent = _calc_percent(count, total)
-        print(f'{k}: {count:>4} ({percent}%)')
+        print(f'{k:<3}: {count:>4} ({percent}%)')
 
     approved_late = day_key[3:]
 

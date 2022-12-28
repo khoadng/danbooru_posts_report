@@ -18,10 +18,11 @@ def rating_report(posts: list[Post]):
     ratings = [p.rating for p in posts]
     counter = Counter(ratings)
     total = counter.total()
+    ratings = sorted([(k,v) for k,v in counter.items()], key=lambda x: x[1], reverse=True)
     print('# Total rating count:')
-    for c in counter:
-        count = counter[c]
-        print(f'{c}: {count: <3}')
+    for r in ratings:
+        count = r[1]
+        print(f'{r[0]}: {count: <3}')
 
     sfw_percent = round(counter[GENERAL] / total * 100, 2)
     nsfw_percent = round(100 - sfw_percent, 2)

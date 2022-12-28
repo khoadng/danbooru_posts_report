@@ -10,13 +10,28 @@ LOCAL_TIMEZONE = datetime.now().astimezone().tzinfo
 def frequency_report(posts: list[Post]):
     dates = [p.createdAt for p in posts]
     dates = [_to_local(d) for d in dates]
+    three_days = set(_get_inbetween_dates(datetime.now(), 3))
+    seven_days = set(_get_inbetween_dates(datetime.now(), 7))
+    thirty_days = set(_get_inbetween_dates(datetime.now(), 30))
+
+    three_dates = [d for d in dates if datetime(d.year, d.month, d.day) in three_days]
+    seven_dates = [d for d in dates if datetime(d.year, d.month, d.day) in seven_days]
+    thirty_dates = [d for d in dates if datetime(d.year, d.month, d.day) in thirty_days]
+    
     date_of_weeks = [d.isoweekday() for d in dates]
     hours = [d.hour for d in dates]
 
     total_day = (dates[0] - dates[-1]).days
-    p_per_day = len(dates) // total_day
+    p_threedays = round(len(three_dates) / len(three_days), 1) 
+    p_sevendays = round(len(seven_dates) / len(seven_days), 1)
+    p_thirtydays = round(len(thirty_dates) / len(thirty_days), 1)
+    p_alltimes = round(len(dates) / total_day, 1)
 
-    print(f'# Post per day: {p_per_day}')
+    print("# Frequency")
+    print(f'Last 3 days : {p_threedays}/day')
+    print(f'Last 7 days : {p_sevendays}/day')
+    print(f'Last 30 days: {p_thirtydays}/day')
+    print(f'All time    : {p_alltimes}/day')
     
     print('# Post count during week:')
     _date_of_week_report(date_of_weeks)
@@ -79,4 +94,4 @@ def _get_inbetween_dates(start: datetime, total_days: int):
         date_modified -= timedelta(days=1) 
         list.append(date_modified)
 
-    return list
+    return [datetime(d.year, d.month, d.day) for d in list]
