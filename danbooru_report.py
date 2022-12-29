@@ -14,6 +14,10 @@ from danbooru.rating import rating_report
 from danbooru.source import source_report
 from danbooru.uploader import uploader_report
 
+headers = {
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36',
+}
+
 def create_request_url(login, api_key, tags, page=1, limit=200):
     if login == None or api_key == None:
         return f'https://danbooru.donmai.us/posts.json?tags={tags}&limit={limit}&page={page}'
@@ -29,7 +33,7 @@ def create_request_approval_url(ids):
     return f'https://danbooru.donmai.us/post_approvals.json?search[post_id]={ids_string}&limit={limit}'
 
 def request(url):
-    res = requests.get(url)
+    res = requests.get(url, headers=headers)
     return json.loads(res.text)
 
 def fetch_user(ids):
