@@ -9,7 +9,7 @@ def print_rank(data, title, selector):
     for i, s in enumerate(data):
         rank = i + 1
         count = selector(s)
-        print(f' {rank}. {count:<4} -> ({post(s.id)})')
+        print(f' {rank:2}. {count:<4} -> ({post(s.id)})')
 
 def _score_get(post: Post):
     return post.score
@@ -29,8 +29,8 @@ def _report(posts: list[Post], selector):
     best_sfw = [p for p in sorted_posts if p.rating == 'g']
     best_nsfw = [p for p in sorted_posts if p.rating != 'g']
 
-    print_rank(best_sfw[:3], 'Best SFW', selector)
-    print_rank(best_nsfw[:3], 'Best NSFW', selector)
+    print_rank(best_sfw[:5], 'Best SFW', selector)
+    print_rank(best_nsfw[:15], 'Best NSFW', selector)
     print_rank(sorted_posts[-3:], 'Worst', selector)
 
 def score_report(posts: list[Post]):
